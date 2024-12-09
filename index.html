@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./dist/tailwind.css" rel="stylesheet" />
+    <title>Music Player Dashboard</title>
+  </head>
+  <body class="bg-gray-900 text-white">
+    <div class="min-h-screen flex flex-col">
+      <!-- Header -->
+      <header class="bg-gray-800 p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Music Player</h1>
+        <nav>
+          <ul class="flex space-x-4">
+            <li><a href="#" class="hover:text-gray-400">Home</a></li>
+            <li><a href="#" class="hover:text-gray-400">Library</a></li>
+            <li><a href="#" class="hover:text-gray-400">Settings</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <!-- Main Content -->
+      <main class="flex-grow p-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Playlist -->
+          <div class="bg-gray-800 p-4 rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Playlist</h2>
+            <button
+              id="selectFolderButton"
+              class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg mb-4"
+            >
+              Select Folder
+            </button>
+            <ul id="musicList"></ul>
+          </div>
+
+          <!-- Now Playing -->
+          <div class="bg-gray-800 p-4 rounded-lg col-span-2">
+            <h2 class="text-xl font-semibold mb-4">Now Playing</h2>
+            <div class="flex items-center space-x-4">
+              <img id="nowPlayingCover" class="w-24 h-24" alt="Album Cover" />
+              <div>
+                <h3 id="nowPlayingTitle" class="text-lg font-bold">Title</h3>
+                <p id="nowPlayingAlbum" class="text-gray-400">Album</p>
+                <p id="nowPlayingArtist" class="text-gray-400">Artist</p>
+              </div>
+            </div>
+            <audio id="audioPlayer" controls class="w-full mt-4"></audio>
+          </div>
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="bg-gray-800 p-4 text-center">
+        <p>&copy; 2023 Music Player. All rights reserved.</p>
+      </footer>
+    </div>
+    <script src="./dist/renderer.js"></script>
+  </body>
+</html>
