@@ -31,3 +31,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+aside#Sidebar {
+  width: 20rem;
+  height: 20rem;
+  margin: 1rem;
+}
+
+div#listsong {
+  margin-bottom: 5rem;
+}

@@ -21,24 +21,25 @@
       </header>
 
       <!-- Main Content -->
-      <main class="flex-grow p-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Playlist -->
-          <div class="bg-gray-800 p-4 rounded-lg">
-            <h2 class="text-xl font-semibold mb-4">Playlist</h2>
-            <button
-              id="selectFolderButton"
-              class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg mb-4"
-            >
-              Select Folder
-            </button>
-            <ul id="musicList"></ul>
-          </div>
-          <!-- Song list -->
-          <div class="bg-gray-800 p-4 rounded-lg col-span-2">
+      <div class="flex flex-grow">
+        <!-- Sidebar -->
+        <aside class="bg-gray-800 p-4 w-64 rounded-lg" id="Sidebar">
+          <h2 class="text-xl font-semibold mb-4">Playlist</h2>
+          <button
+            id="selectFolderButton"
+            class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg mb-4"
+          >
+            Select Folder
+          </button>
+          <ul id="musicList"></ul>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="flex-grow p-4">
+          <div class="bg-gray-800 p-4 rounded-lg" id="listsong">
             <h2 class="text-xl font-semibold mb-4">Songs</h2>
             <ul id="songList">
-              <li class="flex justify-between items-left text-gray-400 m-4">
+              <li class="flex justify-between items-left text-gray-400">
                 <div class="flex items-center space-x-4">
                   <img
                     src="https://via.placeholder.com/64"
@@ -54,8 +55,8 @@
               </li>
             </ul>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
 
       <!-- Now Playing and Audio Player -->
       <div
