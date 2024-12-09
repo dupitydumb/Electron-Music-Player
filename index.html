@@ -22,7 +22,7 @@
 
       <!-- Main Content -->
       <main class="flex-grow p-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Playlist -->
           <div class="bg-gray-800 p-4 rounded-lg">
             <h2 class="text-xl font-semibold mb-4">Playlist</h2>
@@ -33,6 +33,26 @@
               Select Folder
             </button>
             <ul id="musicList"></ul>
+          </div>
+          <!-- Song list -->
+          <div class="bg-gray-800 p-4 rounded-lg col-span-2">
+            <h2 class="text-xl font-semibold mb-4">Songs</h2>
+            <ul id="songList">
+              <li class="flex justify-between items-left text-gray-400 m-4">
+                <div class="flex items-center space-x-4">
+                  <img
+                    src="https://via.placeholder.com/64"
+                    alt="Album Cover"
+                    class="w-12 h-12"
+                  />
+                  <div>
+                    <h3 class="text-lg font-bold">Title</h3>
+                    <p class="truncate">Album</p>
+                    <p class="truncate">Artist</p>
+                  </div>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
       </main>

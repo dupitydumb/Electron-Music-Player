@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("DOMContentLoaded");
   const selectFolderButton = document.getElementById("selectFolderButton");
   const musicList = document.getElementById("musicList");
+  const songList = document.getElementById("songList");
   const audioPlayer = document.getElementById(
     "audioPlayer"
   ) as HTMLAudioElement | null;
@@ -22,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (
     selectFolderButton &&
     musicList &&
+    songList &&
     audioPlayer &&
     playPauseButton &&
     prevButton &&
@@ -35,35 +37,62 @@ document.addEventListener("DOMContentLoaded", () => {
       if (result) {
         files = result;
         musicList.innerHTML = "";
+        songList.innerHTML = "";
         result.forEach((file: any, index: number) => {
-          const listItem = document.createElement("li");
-          listItem.textContent = `${file.title || file.name} - ${
-            file.artist || "Unknown Artist"
-          }`;
-          listItem.classList.add(
-            "mb-2",
+          // const listItem = document.createElement("li");
+          // listItem.textContent = `${file.title || file.name} - ${
+          //   file.artist || "Unknown Artist"
+          // }`;
+          // listItem.classList.add(
+          //   "mb-2",
+          //   "cursor-pointer",
+          //   "hover:text-gray-400"
+          // );
+          // listItem.addEventListener("click", () => {
+          //   currentIndex = index;
+          //   playCurrentFile();
+          // });
+          // musicList.appendChild(listItem);
+
+          const songItem = document.createElement("li");
+          songItem.classList.add(
+            "flex",
+            "justify-between",
+            "items-left",
+            "text-gray-400",
+            "m-6",
             "cursor-pointer",
-            "hover:text-gray-400"
+            "hover:text-gray-200"
           );
-          listItem.addEventListener("click", () => {
+          songItem.innerHTML = `
+            <div class="flex items-center space-x-4">
+              <img src="${
+                file.picture || "https://via.placeholder.com/64"
+              }" alt="Album Cover" class="w-12 h-12">
+              <div>
+                <h3 class="text-lg font-bold">${file.title || file.name}</h3>
+                <p class="truncate">${file.album || "Unknown Album"}</p>
+                <p class="truncate">${file.artist || "Unknown Artist"}</p>
+              </div>
+            </div>
+          `;
+          songItem.addEventListener("click", () => {
             currentIndex = index;
             playCurrentFile();
           });
-          musicList.appendChild(listItem);
+          songList.appendChild(songItem);
         });
       }
     });
 
     playPauseButton.addEventListener("click", () => {
-      if (audioPlayer.paused) {
-        audioPlayer.play();
-        if (playIcon && pauseIcon) {
+      if (playIcon && pauseIcon) {
+        if (audioPlayer.paused) {
+          audioPlayer.play();
           playIcon.classList.add("hidden");
           pauseIcon.classList.remove("hidden");
-        }
-      } else {
-        audioPlayer.pause();
-        if (playIcon && pauseIcon) {
+        } else {
+          audioPlayer.pause();
           playIcon.classList.remove("hidden");
           pauseIcon.classList.add("hidden");
         }
