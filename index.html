@@ -46,10 +46,62 @@
                 <p id="nowPlayingArtist" class="text-gray-400">Artist</p>
               </div>
             </div>
-            <audio id="audioPlayer" controls class="w-full mt-4"></audio>
           </div>
         </div>
       </main>
+
+      <!-- Audio Player -->
+      <div class="bg-gray-800 p-4">
+        <div class="custom-audio-player flex items-center justify-between">
+          <button id="prevButton" class="text-white">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-6 h-6"
+            >
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+          </button>
+          <button id="playPauseButton" class="text-white">
+            <svg
+              id="playIcon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-6 h-6"
+            >
+              <path d="M5 3v18l15-9L5 3z" />
+            </svg>
+            <svg
+              id="pauseIcon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-6 h-6 hidden"
+            >
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+          </button>
+          <button id="nextButton" class="text-white">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-6 h-6"
+            >
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+          </button>
+
+          <div class="flex justify-between text-gray-400 text-sm w-24">
+            <span id="currentTime">0:00</span>
+            <input id="seekBar" type="range" value="0" class="w-full mx-4" />
+            <span id="duration">0:00</span>
+          </div>
+        </div>
+        <audio id="audioPlayer" class="hidden"></audio>
+      </div>
 
       <!-- Footer -->
       <footer class="bg-gray-800 p-4 text-center">

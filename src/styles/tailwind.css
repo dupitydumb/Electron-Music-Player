@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom styles for the audio player */
+.custom-audio-player {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.custom-audio-player button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.custom-audio-player input[type="range"] {
+  width: 100%;
+  margin: 0 1rem;
+}
+
+.custom-audio-player .flex {
+  width: 100%;
+  justify-content: space-between;
+}
