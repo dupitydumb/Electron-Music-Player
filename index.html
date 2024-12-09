@@ -34,25 +34,29 @@
             </button>
             <ul id="musicList"></ul>
           </div>
-
-          <!-- Now Playing -->
-          <div class="bg-gray-800 p-4 rounded-lg col-span-2">
-            <h2 class="text-xl font-semibold mb-4">Now Playing</h2>
-            <div class="flex items-center space-x-4">
-              <img id="nowPlayingCover" class="w-24 h-24" alt="Album Cover" />
-              <div>
-                <h3 id="nowPlayingTitle" class="text-lg font-bold">Title</h3>
-                <p id="nowPlayingAlbum" class="text-gray-400">Album</p>
-                <p id="nowPlayingArtist" class="text-gray-400">Artist</p>
-              </div>
-            </div>
-          </div>
         </div>
       </main>
 
-      <!-- Audio Player -->
-      <div class="bg-gray-800 p-4">
-        <div class="custom-audio-player flex items-center justify-between">
+      <!-- Now Playing and Audio Player -->
+      <div
+        class="bg-gray-800 p-4 fixed bottom-0 left-0 right-0 flex items-center justify-between"
+      >
+        <!-- Now Playing -->
+        <div class="flex items-center space-x-4">
+          <img id="nowPlayingCover" class="w-24 h-24" alt="Album Cover" />
+          <div id="nowPlayingInfo" class="w-48">
+            <h3 id="nowPlayingTitle" class="text-lg font-bold truncate">
+              Title
+            </h3>
+            <p id="nowPlayingAlbum" class="text-gray-400 truncate">Album</p>
+            <p id="nowPlayingArtist" class="text-gray-400 truncate">Artist</p>
+          </div>
+        </div>
+
+        <!-- Audio Player -->
+        <div
+          class="custom-audio-player flex items-center justify-between w-full ml-4"
+        >
           <button id="prevButton" class="text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"

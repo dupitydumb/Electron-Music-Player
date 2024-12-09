@@ -24,3 +24,10 @@
   width: 100%;
   justify-content: space-between;
 }
+
+/* Ensure text truncation with ellipsis */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
