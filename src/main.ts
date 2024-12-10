@@ -40,7 +40,7 @@ ipcMain.handle("select-folder", async () => {
 
   const folderPath = result.filePaths[0];
   const files = fs.readdirSync(folderPath).filter((file) => {
-    return file.endsWith(".mp3");
+    return file.endsWith(".mp3") || file.endsWith(".flac");
   });
 
   const fileData = await Promise.all(

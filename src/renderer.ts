@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const durationDisplay = document.getElementById("duration");
   const playIcon = document.getElementById("playIcon");
   const pauseIcon = document.getElementById("pauseIcon");
+  const volumeBar = document.getElementById("volumeinput") as HTMLInputElement;
 
   let currentIndex = 0;
   let files: any[] = [];
@@ -30,7 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
     nextButton &&
     seekBar &&
     currentTimeDisplay &&
-    durationDisplay
+    durationDisplay &&
+    volumeBar
   ) {
     selectFolderButton.addEventListener("click", async () => {
       const result = await window.ipcRenderer.invoke("select-folder");
@@ -66,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
           );
           songItem.innerHTML = `
             <div class="flex items-center space-x-4">
+              <p class="text-gray-400">${index + 1}</p>
               <img src="${
                 file.picture || "https://via.placeholder.com/64"
               }" alt="Album Cover" class="w-12 h-12">
@@ -128,6 +131,20 @@ document.addEventListener("DOMContentLoaded", () => {
     seekBar.addEventListener("input", () => {
       audioPlayer.currentTime =
         (parseFloat(seekBar.value) / 100) * audioPlayer.duration;
+    });
+
+    audioPlayer.addEventListener("ended", () => {
+      if (currentIndex < files.length - 1) {
+        currentIndex++;
+        playCurrentFile();
+      }
+    });
+
+    volumeBar.addEventListener("input", () => {
+      if (audioPlayer) {
+        audioPlayer.volume = parseFloat(volumeBar.value) / 100;
+        console.log(audioPlayer.volume);
+      }
     });
 
     function playCurrentFile() {

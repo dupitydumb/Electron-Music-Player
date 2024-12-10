@@ -41,3 +41,26 @@ aside#Sidebar {
 div#listsong {
   margin-bottom: 5rem;
 }
+
+div#bottomleft {
+  margin-right: 6rem;
+}
+
+div#volumebar {
+  width: 15rem;
+}
+
+/* Change the appearance of the previous button on hover */
+button#prevButton:hover {
+  transform: scale(1.1); /* Example: slightly enlarge the button */
+}
+
+/* Change the appearance of the next button on hover */
+button#nextButton:hover {
+  transform: scale(1.1); /* Example: slightly enlarge the button */
+}
+
+/* Change the appearance of the play button on hover */
+button#playPauseButton:hover {
+  transform: scale(1.1); /* Example: slightly enlarge the button */
+}

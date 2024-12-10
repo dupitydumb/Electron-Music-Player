@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -41,6 +40,7 @@
             <ul id="songList">
               <li class="flex justify-between items-left text-gray-400">
                 <div class="flex items-center space-x-4">
+                  <p class="truncate">No.</p>
                   <img
                     src="https://via.placeholder.com/64"
                     alt="Album Cover"
@@ -63,8 +63,9 @@
         class="bg-gray-800 p-4 fixed bottom-0 left-0 right-0 flex items-center justify-between"
       >
         <!-- Now Playing -->
-        <div class="flex items-center space-x-4">
-          <img id="nowPlayingCover" class="w-24 h-24" alt="Album Cover" />
+        <div class="flex items-center space-x-4" id="bottomleft">
+          <img id="nowPlayingCover" class="w-24 h-24" alt="Album Cover"
+          src="https://via.placeholder.com/64""/>
           <div id="nowPlayingInfo" class="w-48">
             <h3 id="nowPlayingTitle" class="text-lg font-bold truncate">
               Title
@@ -75,17 +76,47 @@
         </div>
 
         <!-- Audio Player -->
-        <div
-          class="custom-audio-player flex items-center justify-between w-full ml-4"
-        >
+        <div class="flex justify-between text-gray-400 text-sm w-full id=">
+          <span id="currentTime">0:00</span>
+          <input id="seekBar" type="range" value="0" class="w-full mx-4" />
+          <span id="duration">0:00</span>
+        </div>
+        <div class="flex items-center justify-between ml-4" id="volumebar">
+          <!-- Volume icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="w-6 h-6"
+          >
+            <path
+              d="M3 9v6h4l5 5V4L7 9H3zm13.5 2c0-1.76-1.34-3.2-3-3.45v6.9c1.66-.25 3-1.69 3-3.45zM13 3.5v2c2.76.5 5 2.76 5 5.5s-2.24 5-5 5v2c4.02 0 7-3.98 7-8s-2.98-8-7-8z"
+            ></path>
+          </svg>
+          <input
+            id="volumeinput"
+            type="range"
+            min="0"
+            max="100"
+            value="70"
+            class="w-full mx-4 w-full"
+          />
+        </div>
+        <div class="custom-audio-player flex items-center justify-between ml-4">
           <button id="prevButton" class="text-white">
+            <!-- Previous icon -->
             <svg
+              viewBox="0 0 32 32"
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="w-6 h-6"
+              width="32"
+              height="32"
             >
-              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+              <path
+                d="M8 8h2.667v16h-2.667zm4.667 8 11.333 8V8z"
+                fill="#ffffff"
+                class="fill-000000"
+              />
+              <path d="M0 0h32v32H0z" fill="none" />
             </svg>
           </button>
           <button id="playPauseButton" class="text-white">
@@ -96,7 +127,7 @@
               fill="currentColor"
               class="w-6 h-6"
             >
-              <path d="M5 3v18l15-9L5 3z" />
+              <path d="M5 3v18l15-9L5 3z"></path>
             </svg>
             <svg
               id="pauseIcon"
@@ -105,32 +136,32 @@
               fill="currentColor"
               class="w-6 h-6 hidden"
             >
-              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
             </svg>
           </button>
           <button id="nextButton" class="text-white">
+            <!-- Next icon -->
             <svg
+              viewBox="0 0 32 32"
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="w-6 h-6"
+              width="32"
+              height="32"
             >
-              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+              <path
+                d="m8 24 11.333 -8 -11.333 -8zm13.333 -16v16h2.667V8z"
+                fill="#ffffff"
+                class="fill-000000"
+              />
+              <path d="M0 0h32v32H0z" fill="none" />
             </svg>
           </button>
-
-          <div class="flex justify-between text-gray-400 text-sm w-24">
-            <span id="currentTime">0:00</span>
-            <input id="seekBar" type="range" value="0" class="w-full mx-4" />
-            <span id="duration">0:00</span>
-          </div>
         </div>
         <audio id="audioPlayer" class="hidden"></audio>
       </div>
 
       <!-- Footer -->
       <footer class="bg-gray-800 p-4 text-center">
-        <p>&copy; 2023 Music Player. All rights reserved.</p>
+        <p>© 2023 Music Player. All rights reserved.</p>
       </footer>
     </div>
     <script src="./dist/renderer.js"></script>
