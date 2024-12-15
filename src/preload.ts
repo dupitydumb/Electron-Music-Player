@@ -16,4 +16,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   runCmd: (command: any) => ipcRenderer.send("run-cmd", command),
   onCmdOutput: (callback: any) =>
     ipcRenderer.on("cmd-output", (event, data) => callback(data)),
+  send: (channel: any, data: any) => ipcRenderer.send(channel, data),
+  invoke: (channel: any, data: any) => ipcRenderer.invoke(channel, data),
+  on: (channel: any, func: any) =>
+    ipcRenderer.on(channel, (event, ...args) => func(...args)),
 });

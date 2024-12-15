@@ -34,6 +34,7 @@ ipcMain.handle("select-folder", async () => {
   const fileData = await Promise.all(
     files.map(async (file) => {
       const filePath = path.join(folderPath, file);
+      mainWindow?.webContents.send("show-dialog", "Reading file data", file);
       let tags;
       let pictureData = null;
       let flacData = null;
@@ -51,28 +52,18 @@ ipcMain.handle("select-folder", async () => {
       };
     })
   );
-
+  mainWindow?.webContents.send("hide-dialog");
   async function readFlac(filePath: string, filetype: string) {
     // Get metadata from the file with fs.readFile
     const fileData = fs.readFileSync(filePath);
     const musicMetadata = await mm.loadMusicMetadata();
     const metadata = await musicMetadata.parseBuffer(fileData, filetype);
-    console.log("metadata", metadata);
     //return metadata;
     return metadata;
   }
 
   return fileData;
 });
-
-//read mp3 file using music-metadata
-async function readMp3(filePath: string) {
-  const fileData = fs.readFileSync(filePath);
-  const musicMetadata = await mm.loadMusicMetadata();
-  const metadata = await musicMetadata.parseBuffer(fileData, "mpeg");
-  console.log("metadata", metadata);
-  return metadata;
-}
 
 // ipcMain.on("run-cmd", (event, command: string) => {
 //   const child = spawn(command, { shell: true });

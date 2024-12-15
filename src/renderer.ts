@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     volumeBar
   ) {
     selectFolderButton.addEventListener("click", async () => {
+      // showDialog("Selecting folder...");
       const result = await window.ipcRenderer.invoke("select-folder");
       if (result) {
         files = result;
@@ -77,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
           songList.appendChild(songItem);
         });
       }
+      // hideDialog();
     });
 
     playPauseButton.addEventListener("click", () => {
@@ -209,6 +211,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     console.log(data);
   });
+
+  window.electronAPI.on("show-dialog", (event: any, message: string) => {
+    showDialog(message);
+  });
+
+  window.electronAPI.on("hide-dialog", () => {
+    hideDialog();
+  });
 });
 
 function formatTime(seconds: number): string {
@@ -225,4 +235,22 @@ function _arrayBufferToBase64(buffer: any) {
     binary += String.fromCharCode(bytes[i]);
   }
   return window.btoa(binary);
+}
+
+function showDialog(message: string) {
+  const dialogBox = document.getElementById("dialogBox");
+  const dialogText = document.getElementById("dialogText");
+  if (dialogBox && dialogText) {
+    dialogText.textContent = message;
+    if (dialogBox.classList.contains("hidden")) {
+      dialogBox.classList.remove("hidden");
+    }
+  }
+}
+
+function hideDialog() {
+  const dialogBox = document.getElementById("dialogBox");
+  if (dialogBox) {
+    dialogBox.classList.add("hidden");
+  }
 }
