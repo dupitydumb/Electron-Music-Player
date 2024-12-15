@@ -6,7 +6,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*.ts", "global.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.d.ts", "global.d.ts"]
 }

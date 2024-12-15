@@ -64,3 +64,19 @@ button#nextButton:hover {
 button#playPauseButton:hover {
   transform: scale(1.1); /* Example: slightly enlarge the button */
 }
+#cmdOutputText {
+  white-space: pre-wrap; /* Enables text wrapping */
+  word-wrap: break-word; /* Breaks long words */
+  width: 100%; /* Ensures the element takes the full width of its container */
+  height: 300px; /* Sets a fixed height for the output container */
+  overflow-y: auto; /* Adds a vertical scrollbar if content overflows */
+  border: 1px solid #ccc; /* Adds a border for better visibility */
+  padding: 10px; /* Adds some padding for better readability */
+}
+
+input#searchInput {
+  width: 90%; /* Ensures the input takes the full width of its container */
+  padding: 0.5rem; /* Adds some padding for better readability */
+  margin-bottom: 1rem; /* Adds space between the input and other elements */
+  color: #333; /* Sets the text color to a dark shade */
+}

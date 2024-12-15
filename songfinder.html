@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./dist/tailwind.css" rel="stylesheet" />
+    <title>Music Player Dashboard</title>
+  </head>
+  <body class="bg-gray-900 text-white">
+    <div class="min-h-screen flex flex-col">
+        <!-- Main Area -->
+        <!-- Song Search -->
+        <main class="flex-grow p-4">
+          <div class="bg-gray-800 p-4 rounded-lg" id="listsong">
+            <h2 class="text-xl font-semibold mb-4">Songs</h2>
+            <!-- Song Search horizontaly aligned -->
+            <div class="relative flex items-center mb-4">
+                <input
+                  type="text"
+                  id="searchInput"
+                  class="bg-gray-700 text-white p-2 pr-10 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Search for songs..."
+                />
+                <div class="items-center justify-center">
+                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve" width="32" height="32"><path fill="none" stroke="#ffffff" stroke-width="2" stroke-miterlimit="10" cx="19.5" cy="12.5" r="8.5" d="M28 12.5A8.5 8.5 0 0 1 19.5 21A8.5 8.5 0 0 1 11 12.5A8.5 8.5 0 0 1 28 12.5z"/><path fill="none" stroke="#ffffff" stroke-width="2" stroke-miterlimit="10" x1="4" y1="28" x2="14" y2="18" d="M4 28L14 18"/></svg>
+                </div>
+                </div>
+            <ul id="songList" class="space-y-4"></ul>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.getElementById("searchInput");
+        const songList = document.getElementById("songList");
+
+        searchInput.addEventListener("input", async () => {
+          const query = searchInput.value.trim();
+          if (query.length > 0) {
+            // Simulate an API call to search for songs
+            const results = await searchSongs(query);
+            displayResults(results);
+          } else {
+            songList.innerHTML = "";
+          }
+        });
+
+        async function searchSongs(query) {
+          // Simulate an API call to search for songs
+          // Replace this with actual API call
+          return [
+            { title: "Song 1", artist: "Artist 1", url: "#" },
+            { title: "Song 2", artist: "Artist 2", url: "#" },
+          ];
+        }
+
+        function displayResults(results) {
+          songList.innerHTML = "";
+          results.forEach((song) => {
+            const listItem = document.createElement("li");
+            listItem.classList.add(
+              "flex",
+              "justify-between",
+              "items-center",
+              "bg-gray-700",
+              "p-4",
+              "rounded-lg"
+            );
+            listItem.innerHTML = `
+              <div>
+                <h3 class="text-lg font-bold">${song.title}</h3>
+                <p class="text-gray-400">${song.artist}</p>
+              </div>
+              <button class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+                Download
+              </button>
+            `;
+            songList.appendChild(listItem);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
