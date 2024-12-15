@@ -5,9 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectFolderButton = document.getElementById("selectFolderButton");
   const musicList = document.getElementById("musicList");
   const songList = document.getElementById("songList");
-  const audioPlayer = document.getElementById(
-    "audioPlayer"
-  ) as HTMLAudioElement | null;
   const playPauseButton = document.getElementById("playPauseButton");
   const prevButton = document.getElementById("prevButton");
   const nextButton = document.getElementById("nextButton");
@@ -31,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
     selectFolderButton &&
     musicList &&
     songList &&
-    audioPlayer &&
     playPauseButton &&
     prevButton &&
     nextButton &&
@@ -72,15 +68,14 @@ document.addEventListener("DOMContentLoaded", () => {
             "cursor-pointer",
             "hover:text-gray-200"
           );
-          if (file.path.endsWith(".flac")) {
-            songItem.innerHTML = `
+          songItem.innerHTML = `
               <div class="flex items-center space-x-4">
                 <p class="text-gray-400">${index + 1}</p>
                 <img src="data:${
                   file.picture[0].format
                 };base64,${_arrayBufferToBase64(
-              file.picture[0].data
-            )}" alt="Album Cover" class="w-12 h-12">
+            file.picture[0].data
+          )}" alt="Album Cover" class="w-12 h-12">
                 <div>
                   <h3 class="text-lg font-bold">${file.title || file.name}</h3>
                   <p class="truncate">${file.album || "Unknown Album"}</p>
@@ -88,52 +83,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
               </div>
             `;
-            songItem.addEventListener("click", () => {
-              currentIndex = index;
-              playCurrentFile();
-            });
-            songList.appendChild(songItem);
-          } else if (file.path.endsWith(".mp3")) {
-            songItem.innerHTML = `
-              <div class="flex items-center space-x-4">
-                <p class="text-gray-400">${index + 1}</p>
-                <img src="${
-                  file.picture || "https://via.placeholder.com/64"
-                }" alt="Album Cover" class="w-12 h-12">
-                <div>
-                  <h3 class="text-lg font-bold">${file.title || file.name}</h3>
-                  <p class="truncate">${file.album || "Unknown Album"}</p>
-                  <p class="truncate">${file.artist || "Unknown Artist"}</p>
-                </div>
-              </div>
-            `;
-            songItem.addEventListener("click", () => {
-              currentIndex = index;
-              playCurrentFile();
-            });
-            songList.appendChild(songItem);
-          }
+          songItem.addEventListener("click", () => {
+            currentIndex = index;
+            playCurrentFile();
+          });
+          songList.appendChild(songItem);
         });
       }
     });
 
     playPauseButton.addEventListener("click", () => {
       if (playIcon && pauseIcon) {
-        if (audioPlayer.paused) {
-          audioPlayer.play();
-          if (sound) {
-            //resume sound
-            sound.play();
-          }
-          playIcon.classList.add("hidden");
-          pauseIcon.classList.remove("hidden");
-        } else {
-          audioPlayer.pause();
-          if (sound) {
+        if (sound) {
+          if (sound.playing()) {
             sound.pause();
+            playIcon.classList.remove("hidden");
+            pauseIcon.classList.add("hidden");
+          } else {
+            sound.play();
+            playIcon.classList.add("hidden");
+            pauseIcon.classList.remove("hidden");
           }
-          playIcon.classList.remove("hidden");
-          pauseIcon.classList.add("hidden");
         }
       }
     });
@@ -152,138 +122,91 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    audioPlayer.addEventListener("timeupdate", () => {
-      if (files[currentIndex].path.endsWith(".mp3")) {
-        seekBar.value = (
-          (audioPlayer.currentTime / audioPlayer.duration) *
-          100
-        ).toString();
-        currentTimeDisplay.textContent = formatTime(audioPlayer.currentTime);
-      }
-      if (sound) {
-        seekBar.value = ((sound.seek() / sound.duration()) * 100).toString();
-        currentTimeDisplay.textContent = formatTime(sound.seek());
-      }
-    });
-
-    audioPlayer.addEventListener("loadedmetadata", () => {
-      if (files[currentIndex].path.endsWith(".mp3")) {
-        durationDisplay.textContent = formatTime(audioPlayer.duration);
-      }
-      if (sound) {
-        durationDisplay.textContent = formatTime(sound.duration());
-      }
-    });
-
     seekBar.addEventListener("input", () => {
-      audioPlayer.currentTime =
-        (parseFloat(seekBar.value) / 100) * audioPlayer.duration;
       if (sound) {
-        sound.seek(audioPlayer.currentTime);
-      }
-    });
-
-    audioPlayer.addEventListener("ended", () => {
-      if (currentIndex < files.length - 1) {
-        currentIndex++;
-        playCurrentFile();
+        sound.seek((parseFloat(seekBar.value) / 100) * sound.duration());
       }
     });
 
     volumeBar.addEventListener("input", () => {
-      if (audioPlayer) {
-        audioPlayer.volume = parseFloat(volumeBar.value) / 100;
-        console.log(audioPlayer.volume);
-        if (sound) {
-          sound.volume(audioPlayer.volume);
-        }
+      if (sound) {
+        sound.volume(parseFloat(volumeBar.value) / 100);
       }
     });
 
     function playCurrentFile() {
       const file = files[currentIndex];
-      if (file.path.endsWith(".mp3")) {
-        if (audioPlayer && playIcon && pauseIcon) {
-          audioPlayer.src = file.path;
-          console.log("playing mp3 : ", file.path);
-          audioPlayer.play();
+      const howlertag = document.getElementById(
+        "howler-tag"
+      ) as HTMLScriptElement;
+      const nowPlayingTitle = document.getElementById("nowPlayingTitle");
+      const nowPlayingAlbum = document.getElementById("nowPlayingAlbum");
+      const nowPlayingArtist = document.getElementById("nowPlayingArtist");
+      const nowPlayingCover = document.getElementById(
+        "nowPlayingCover"
+      ) as HTMLImageElement | null;
+
+      if (howlertag) {
+        //if there is already Howl variable, destroy it
+        Howler.unload();
+        if (sound) {
+          sound.stop();
+        }
+        sound = new Howl({
+          src: [file.path],
+          format: ["flac"],
+          html5: true,
+          volume: parseFloat(volumeBar.value) / 100,
+          onend: () => {
+            if (currentIndex < files.length - 1) {
+              currentIndex++;
+              playCurrentFile();
+            }
+          },
+        });
+        sound.play();
+        if (playIcon && pauseIcon) {
           playIcon.classList.add("hidden");
           pauseIcon.classList.remove("hidden");
-          const nowPlayingTitle = document.getElementById("nowPlayingTitle");
-          const nowPlayingAlbum = document.getElementById("nowPlayingAlbum");
-          const nowPlayingArtist = document.getElementById("nowPlayingArtist");
-          const nowPlayingCover = document.getElementById(
-            "nowPlayingCover"
-          ) as HTMLImageElement | null;
-
-          if (nowPlayingTitle) {
-            nowPlayingTitle.textContent = file.title || file.name;
-          }
-          if (nowPlayingAlbum) {
-            nowPlayingAlbum.textContent = file.album || "Unknown Album";
-          }
-          if (nowPlayingArtist) {
-            nowPlayingArtist.textContent = file.artist || "Unknown Artist";
-          }
-          if (nowPlayingCover) {
-            if (file.picture && file.path.endsWith(".mp3")) {
-              nowPlayingCover.src = file.picture;
-            } else {
-              nowPlayingCover.src = "";
-            }
-          }
         }
-      }
-      if (file.path.endsWith(".flac")) {
-        const howlertag = document.getElementById(
-          "howler-tag"
-        ) as HTMLScriptElement;
-        const nowPlayingTitle = document.getElementById("nowPlayingTitle");
-        const nowPlayingAlbum = document.getElementById("nowPlayingAlbum");
-        const nowPlayingArtist = document.getElementById("nowPlayingArtist");
-        const nowPlayingCover = document.getElementById(
-          "nowPlayingCover"
-        ) as HTMLImageElement | null;
+        if (nowPlayingTitle) {
+          nowPlayingTitle.textContent = file.title || file.name;
+        }
+        if (nowPlayingAlbum) {
+          nowPlayingAlbum.textContent = file.album || "Unknown Album";
+        }
+        if (nowPlayingArtist) {
+          nowPlayingArtist.textContent = file.artist || "Unknown Artist";
+        }
+        if (nowPlayingCover && file.picture) {
+          console.log("file.picture", file.picture[0]);
+          //convert Uint8Array to base64
+          nowPlayingCover.src = `data:${
+            file.picture[0].format
+          };base64,${_arrayBufferToBase64(file.picture[0].data)}`;
+        }
 
-        if (howlertag) {
-          //if there is already Howl variable, destroy it
-          Howler.unload();
-          if (sound) {
-            sound.stop();
-          }
-          sound = new Howl({
-            src: [file.path],
-            format: ["flac"],
-            html5: true,
-            onend: () => {
-              if (currentIndex < files.length - 1) {
-                currentIndex++;
-                playCurrentFile();
+        if (durationDisplay && currentTimeDisplay) {
+          sound.on("play", () => {
+            if (sound) {
+              durationDisplay.textContent = formatTime(sound.duration());
+            }
+            setInterval(() => {
+              if (sound) {
+                seekBar.value = (
+                  (sound.seek() / sound.duration()) *
+                  100
+                ).toString();
+                currentTimeDisplay.textContent = formatTime(sound.seek());
               }
-            },
+            }, 1000);
           });
-          console.log("metadata", file.metadata);
-          sound.play();
-          if (playIcon && pauseIcon) {
-            playIcon.classList.add("hidden");
-            pauseIcon.classList.remove("hidden");
-          }
-          if (nowPlayingTitle) {
-            nowPlayingTitle.textContent = file.title || file.name;
-          }
-          if (nowPlayingAlbum) {
-            nowPlayingAlbum.textContent = file.album || "Unknown Album";
-          }
-          if (nowPlayingArtist) {
-            nowPlayingArtist.textContent = file.artist || "Unknown Artist";
-          }
-          if (nowPlayingCover && file.picture) {
-            console.log("file.picture", file.picture[0]);
-            //convert Uint8Array to base64
-            nowPlayingCover.src = `data:${
-              file.picture[0].format
-            };base64,${_arrayBufferToBase64(file.picture[0].data)}`;
-          }
+        }
+
+        if (seekBar) {
+          seekBar.addEventListener("input", () => {
+            sound?.seek((parseFloat(seekBar.value) / 100) * sound.duration());
+          });
         }
       }
     }

@@ -37,44 +37,26 @@ ipcMain.handle("select-folder", async () => {
       let tags;
       let pictureData = null;
       let flacData = null;
-      if (file.endsWith(".mp3")) {
-        tags = NodeID3.read(filePath);
-        const picture = tags.image;
-        if (picture && typeof picture !== "string") {
-          const base64 = Buffer.from(picture.imageBuffer).toString("base64");
-          pictureData = `data:${picture.mime};base64,${base64}`;
-        }
-        return {
-          name: file,
-          path: filePath,
-          title: tags?.title || "Unknown Title",
-          album: tags?.album || "Unknown Album",
-          artist: tags?.artist || "Unknown Artist",
-          picture: pictureData,
-          year: tags?.year || "Unknown Year",
-        };
-      } else if (file.endsWith(".flac")) {
-        flacData = readFlac(filePath);
-        console.log("filePath", filePath);
-        return {
-          name: file,
-          path: filePath,
-          title: (await flacData)?.common.title || "Unknown Title",
-          album: (await flacData)?.common.album || "Unknown Album",
-          artist: (await flacData)?.common.artist || "Unknown Artist",
-          picture: (await flacData)?.common.picture || "Unknown Picture",
-          year: (await flacData)?.common.year || "Unknown Year",
-          duration: (await flacData)?.format.duration || "Unknown Duration",
-        };
-      }
+      flacData = readFlac(filePath, file.endsWith(".flac") ? "flac" : "mpeg");
+      console.log("filePath", filePath);
+      return {
+        name: file,
+        path: filePath,
+        title: (await flacData)?.common.title || "Unknown Title",
+        album: (await flacData)?.common.album || "Unknown Album",
+        artist: (await flacData)?.common.artist || "Unknown Artist",
+        picture: (await flacData)?.common.picture || "Unknown Picture",
+        year: (await flacData)?.common.year || "Unknown Year",
+        duration: (await flacData)?.format.duration || "Unknown Duration",
+      };
     })
   );
 
-  async function readFlac(filePath: string) {
+  async function readFlac(filePath: string, filetype: string) {
     // Get metadata from the file with fs.readFile
     const fileData = fs.readFileSync(filePath);
     const musicMetadata = await mm.loadMusicMetadata();
-    const metadata = await musicMetadata.parseBuffer(fileData, "audio/flac");
+    const metadata = await musicMetadata.parseBuffer(fileData, filetype);
     console.log("metadata", metadata);
     //return metadata;
     return metadata;
@@ -82,6 +64,15 @@ ipcMain.handle("select-folder", async () => {
 
   return fileData;
 });
+
+//read mp3 file using music-metadata
+async function readMp3(filePath: string) {
+  const fileData = fs.readFileSync(filePath);
+  const musicMetadata = await mm.loadMusicMetadata();
+  const metadata = await musicMetadata.parseBuffer(fileData, "mpeg");
+  console.log("metadata", metadata);
+  return metadata;
+}
 
 // ipcMain.on("run-cmd", (event, command: string) => {
 //   const child = spawn(command, { shell: true });
