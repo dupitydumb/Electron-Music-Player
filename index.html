@@ -45,23 +45,20 @@
         <main class="flex-grow p-4">
           <div class="bg-gray-800 p-4 rounded-lg" id="listsong">
             <h2 class="text-xl font-semibold mb-4">Songs</h2>
-            <ul id="songList">
-              <li class="flex justify-between items-left text-gray-400">
-                <div class="flex items-center space-x-4">
-                  <p class="truncate">No.</p>
-                  <img
-                    src="https://via.placeholder.com/64"
-                    alt="Album Cover"
-                    class="w-12 h-12"
-                  />
-                  <div>
-                    <h3 class="text-lg font-bold">Title</h3>
-                    <p class="truncate">Album</p>
-                    <p class="truncate">Artist</p>
-                  </div>
-                </div>
-              </li>
-            </ul>
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-4 py-2">#</th>
+                  <th class="px-4 py-2">Title</th>
+                  <th class="px-4 py-2">Album</th>
+                  <th class="px-4 py-2">Year</th>
+                  <th class="px-4 py-2">Duration</th>
+                </tr>
+              </thead>
+              <tbody id="songList">
+                <!-- Rows will be appended here -->
+              </tbody>
+            </table>
           </div>
         </main>
       </div>
@@ -78,7 +75,6 @@
             <h3 id="nowPlayingTitle" class="text-lg font-bold truncate">
               Title
             </h3>
-            <p id="nowPlayingAlbum" class="text-gray-400 truncate">Album</p>
             <p id="nowPlayingArtist" class="text-gray-400 truncate">Artist</p>
           </div>
         </div>

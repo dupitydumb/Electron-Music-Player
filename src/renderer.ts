@@ -43,50 +43,37 @@ document.addEventListener("DOMContentLoaded", () => {
         musicList.innerHTML = "";
         songList.innerHTML = "";
         result.forEach((file: any, index: number) => {
-          // const listItem = document.createElement("li");
-          // listItem.textContent = `${file.title || file.name} - ${
-          //   file.artist || "Unknown Artist"
-          // }`;
-          // listItem.classList.add(
-          //   "mb-2",
-          //   "cursor-pointer",
-          //   "hover:text-gray-400"
-          // );
-          // listItem.addEventListener("click", () => {
-          //   currentIndex = index;
-          //   playCurrentFile();
-          // });
-          // musicList.appendChild(listItem);
-
-          const songItem = document.createElement("li");
+          const songItem = document.createElement("tr");
           songItem.classList.add(
-            "flex",
-            "justify-between",
-            "items-left",
             "text-gray-400",
-            "m-6",
             "cursor-pointer",
             "hover:text-gray-200"
           );
           songItem.innerHTML = `
-              <div class="flex items-center space-x-4">
-                <p class="text-gray-400">${index + 1}</p>
-                <img src="data:${
-                  file.picture[0].format
-                };base64,${_arrayBufferToBase64(
+    <td class="px-4 py-2">${index + 1}</td>
+    <td class="px-4 py-2">
+        <div class="flex items-center">
+            <img src="data:${
+              file.picture[0].format
+            };base64,${_arrayBufferToBase64(
             file.picture[0].data
-          )}" alt="Album Cover" class="w-12 h-12">
-                <div>
-                  <h3 class="text-lg font-bold">${file.title || file.name}</h3>
-                  <p class="truncate">${file.album || "Unknown Album"}</p>
-                  <p class="truncate">${file.artist || "Unknown Artist"}</p>
-                </div>
-              </div>
-            `;
+          )}" class="w-10 h-10" />
+            <div class="ml-4">
+                <div class="font-semibold">${file.title || file.name}</div>
+                <div class="text-sm">${file.artist || "Unknown Artist"}</div>
+            </div>
+        </div>
+    </td>
+    <td class="px-4 py-2 truncate">${file.album || "Unknown Album"}</td>
+    <td class="px-4 py-2 truncate">${file.year || "Unknown Year"}</td>
+    <td class="px-4 py-2 truncate">${formatTime(file.duration)}</td>
+  `;
+
           songItem.addEventListener("click", () => {
             currentIndex = index;
             playCurrentFile();
           });
+
           songList.appendChild(songItem);
         });
       }
@@ -140,7 +127,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "howler-tag"
       ) as HTMLScriptElement;
       const nowPlayingTitle = document.getElementById("nowPlayingTitle");
-      const nowPlayingAlbum = document.getElementById("nowPlayingAlbum");
       const nowPlayingArtist = document.getElementById("nowPlayingArtist");
       const nowPlayingCover = document.getElementById(
         "nowPlayingCover"
@@ -171,9 +157,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (nowPlayingTitle) {
           nowPlayingTitle.textContent = file.title || file.name;
-        }
-        if (nowPlayingAlbum) {
-          nowPlayingAlbum.textContent = file.album || "Unknown Album";
         }
         if (nowPlayingArtist) {
           nowPlayingArtist.textContent = file.artist || "Unknown Artist";
