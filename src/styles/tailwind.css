@@ -153,6 +153,8 @@ td .song-info p {
   max-width: 80%;
   max-height: 80%;
   overflow: auto;
+  min-width: 20%;
+  min-height: 20%;
 }
 
 .spinner {

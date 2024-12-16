@@ -29,7 +29,13 @@ document.addEventListener("DOMContentLoaded", () => {
   volumeBar = document.getElementById("volumeinput") as HTMLInputElement;
   folderNameDisplay = document.getElementById("folderListContainer");
   currentIndex = 0;
+  const okButton = document.getElementById("dialogButton");
 
+  if (okButton) {
+    okButton.addEventListener("click", () => {
+      hideDialog();
+    });
+  }
   document
     .getElementById("openDownloadPageButton")
     ?.addEventListener("click", () => {
@@ -124,7 +130,6 @@ function playCurrentFile() {
     }
     sound = new Howl({
       src: [file.path],
-      format: ["flac"],
       html5: true,
       volume: parseFloat(volumeBar.value) / 100,
       onend: () => {
@@ -132,6 +137,45 @@ function playCurrentFile() {
           currentIndex++;
           playCurrentFile();
         }
+      },
+      onloaderror: (id, error) => {
+        console.log("error", error);
+        switch (error) {
+          case 1:
+            showDialog(
+              "Error: The fetching process for the media resource was aborted by the user agent at the user's request",
+              true,
+              false
+            );
+            break;
+          case 2:
+            showDialog(
+              "Error: A network error of some description caused the user agent to stop fetching the media resource, after the resource was established to be usable.",
+              true,
+              false
+            );
+            break;
+          case 3:
+            showDialog(
+              "Error: An error of some description occurred while decoding the media resource,",
+              true,
+              false
+            );
+            break;
+          case 4:
+            showDialog(
+              `Error: The media resource ${file.title} was not suitable`,
+              true,
+              false
+            );
+            break;
+          default:
+            showDialog("Unknown error", true, false);
+            break;
+        }
+      },
+      onload: () => {
+        console.log("onload");
       },
     });
     sound.play();
@@ -282,13 +326,37 @@ function _arrayBufferToBase64(buffer: any) {
   return window.btoa(binary);
 }
 
-function showDialog(message: string) {
+function showDialog(
+  message: string,
+  isButton: boolean = false,
+  isSpinner: boolean = true
+) {
   const dialogBox = document.getElementById("dialogBox");
   const dialogText = document.getElementById("dialogText");
+  const okButton = document.getElementById("dialogButton");
+  const spinner = document.getElementById("spinner-dialog");
   if (dialogBox && dialogText) {
     dialogText.textContent = message;
     if (dialogBox.classList.contains("hidden")) {
       dialogBox.classList.remove("hidden");
+    }
+    if (isButton) {
+      if (okButton) {
+        okButton.classList.remove("hidden");
+      }
+    } else {
+      if (okButton) {
+        okButton.classList.add("hidden");
+      }
+    }
+    if (isSpinner) {
+      if (spinner) {
+        spinner.classList.remove("hidden");
+      }
+    } else {
+      if (spinner) {
+        spinner.classList.add("hidden");
+      }
     }
   }
 }
