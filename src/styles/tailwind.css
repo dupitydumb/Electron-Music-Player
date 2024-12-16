@@ -150,7 +150,9 @@ td .song-info p {
   padding: 20px;
   border-radius: 5px;
   text-align: center;
-  width: 25rem;
+  max-width: 80%;
+  max-height: 80%;
+  overflow: auto;
 }
 
 .spinner {

@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const pauseIcon = document.getElementById("pauseIcon");
   const volumeBar = document.getElementById("volumeinput") as HTMLInputElement;
   const runCommandButton = document.getElementById("runCommandButton");
+  const folderNameDisplay = document.getElementById("folderListContainer");
   let currentIndex = 0;
   let files: any[] = [];
 
@@ -26,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (
     selectFolderButton &&
-    musicList &&
     songList &&
     playPauseButton &&
     prevButton &&
@@ -34,14 +34,13 @@ document.addEventListener("DOMContentLoaded", () => {
     seekBar &&
     currentTimeDisplay &&
     durationDisplay &&
-    volumeBar
+    volumeBar &&
+    folderNameDisplay
   ) {
     selectFolderButton.addEventListener("click", async () => {
-      // showDialog("Selecting folder...");
       const result = await window.ipcRenderer.invoke("select-folder");
       if (result) {
         files = result;
-        musicList.innerHTML = "";
         songList.innerHTML = "";
         result.forEach((file: any, index: number) => {
           const songItem = document.createElement("tr");
@@ -78,7 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
           songList.appendChild(songItem);
         });
       }
-      // hideDialog();
     });
 
     playPauseButton.addEventListener("click", () => {
@@ -195,6 +193,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
+  } else {
+    //in show dialog, log all required elements to know which one is missing
+    console.log(
+      selectFolderButton,
+      songList,
+      playPauseButton,
+      prevButton,
+      nextButton,
+      seekBar,
+      currentTimeDisplay,
+      durationDisplay,
+      volumeBar,
+      folderNameDisplay
+    );
+    showDialog("Some elements are missing please check the console");
   }
 
   if (runCommandButton) {
@@ -219,7 +232,44 @@ document.addEventListener("DOMContentLoaded", () => {
   window.electronAPI.on("hide-dialog", () => {
     hideDialog();
   });
+
+  window.electronAPI.on(
+    "show-folder-name",
+    (event: any, folderName: string) => {
+      generateFolderList(folderName);
+    }
+  );
 });
+
+function generateFolderList(folderName: string) {
+  const folderListContainer = document.getElementById("folderListContainer");
+  if (!folderListContainer) return;
+
+  const folderElement = document.createElement("div");
+  folderElement.id = "folderNameDisplay";
+  folderElement.className = "text-gray-400 flex items-center space-x-2 mb-4";
+  folderElement.innerHTML = `
+    <svg
+      fill="#000000"
+      width="32px"
+      height="32px"
+      viewBox="0 0 0.96 0.96"
+      id="folder"
+      data-name="Flat Color"
+      xmlns="http://www.w3.org/2000/svg"
+      class="icon flat-color"
+    >
+      <path
+        id="primary"
+        d="M0.8 0.24h-0.264L0.44 0.144A0.08 0.08 0 0 0 0.384 0.12H0.16a0.08 0.08 0 0 0 -0.08 0.08v0.56a0.08 0.08 0 0 0 0.08 0.08h0.64a0.08 0.08 0 0 0 0.08 -0.08V0.32a0.08 0.08 0 0 0 -0.08 -0.08"
+        style="fill: rgb(223, 223, 223)"
+      />
+    </svg>
+    <p>${folderName}</p>
+  `;
+
+  folderListContainer.appendChild(folderElement);
+}
 
 function formatTime(seconds: number): string {
   const minutes = Math.floor(seconds / 60);

@@ -18,6 +18,7 @@ app.on("window-all-closed", () => {
 });
 
 ipcMain.handle("select-folder", async () => {
+  console.log("Selecting folder");
   const result = await dialog.showOpenDialog(mainWindow!, {
     properties: ["openDirectory"],
   });
@@ -30,6 +31,10 @@ ipcMain.handle("select-folder", async () => {
   const files = fs.readdirSync(folderPath).filter((file) => {
     return file.endsWith(".mp3") || file.endsWith(".flac");
   });
+  //get the folder name
+  const folderName = path.basename(folderPath);
+  console.log("folderName", folderName);
+  mainWindow?.webContents.send("show-folder-name", "Folder Name", folderName);
 
   const fileData = await Promise.all(
     files.map(async (file) => {
