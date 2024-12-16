@@ -1,23 +1,34 @@
-document.addEventListener("DOMContentLoaded", () => {
-  let sound: Howl | null = null;
+let selectFolderButton: any;
+let songList: any;
+let playPauseButton: any;
+let prevButton: any;
+let nextButton: any;
+let seekBar: any;
+let currentTimeDisplay: any;
+let durationDisplay: any;
+let volumeBar: any;
+let folderNameDisplay: any;
+let playIcon: any;
+let pauseIcon: any;
+let currentIndex: number;
+let files: any[] = [];
+let sound: Howl | null = null;
 
+document.addEventListener("DOMContentLoaded", () => {
   console.log("DOMContentLoaded");
-  const selectFolderButton = document.getElementById("selectFolderButton");
-  const musicList = document.getElementById("musicList");
-  const songList = document.getElementById("songList");
-  const playPauseButton = document.getElementById("playPauseButton");
-  const prevButton = document.getElementById("prevButton");
-  const nextButton = document.getElementById("nextButton");
-  const seekBar = document.getElementById("seekBar") as HTMLInputElement;
-  const currentTimeDisplay = document.getElementById("currentTime");
-  const durationDisplay = document.getElementById("duration");
-  const playIcon = document.getElementById("playIcon");
-  const pauseIcon = document.getElementById("pauseIcon");
-  const volumeBar = document.getElementById("volumeinput") as HTMLInputElement;
-  const runCommandButton = document.getElementById("runCommandButton");
-  const folderNameDisplay = document.getElementById("folderListContainer");
-  let currentIndex = 0;
-  let files: any[] = [];
+  selectFolderButton = document.getElementById("selectFolderButton");
+  songList = document.getElementById("songList");
+  playPauseButton = document.getElementById("playPauseButton");
+  prevButton = document.getElementById("prevButton");
+  nextButton = document.getElementById("nextButton");
+  seekBar = document.getElementById("seekBar") as HTMLInputElement;
+  currentTimeDisplay = document.getElementById("currentTime");
+  durationDisplay = document.getElementById("duration");
+  playIcon = document.getElementById("playIcon");
+  pauseIcon = document.getElementById("pauseIcon");
+  volumeBar = document.getElementById("volumeinput") as HTMLInputElement;
+  folderNameDisplay = document.getElementById("folderListContainer");
+  currentIndex = 0;
 
   document
     .getElementById("openDownloadPageButton")
@@ -25,198 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
       window.ipcRenderer.send("open-download-page", {});
     });
 
-  if (
-    selectFolderButton &&
-    songList &&
-    playPauseButton &&
-    prevButton &&
-    nextButton &&
-    seekBar &&
-    currentTimeDisplay &&
-    durationDisplay &&
-    volumeBar &&
-    folderNameDisplay
-  ) {
-    selectFolderButton.addEventListener("click", async () => {
-      const result = await window.ipcRenderer.invoke("select-folder");
-      if (result) {
-        files = result;
-        songList.innerHTML = "";
-        result.forEach((file: any, index: number) => {
-          const songItem = document.createElement("tr");
-          songItem.classList.add(
-            "text-gray-400",
-            "cursor-pointer",
-            "hover:text-gray-200"
-          );
-          songItem.innerHTML = `
-    <td class="px-4 py-2">${index + 1}</td>
-    <td class="px-4 py-2">
-        <div class="flex items-center">
-            <img src="data:${
-              file.picture[0].format
-            };base64,${_arrayBufferToBase64(
-            file.picture[0].data
-          )}" class="w-10 h-10" />
-            <div class="ml-4">
-                <div class="font-semibold">${file.title || file.name}</div>
-                <div class="text-sm">${file.artist || "Unknown Artist"}</div>
-            </div>
-        </div>
-    </td>
-    <td class="px-4 py-2 truncate">${file.album || "Unknown Album"}</td>
-    <td class="px-4 py-2 truncate">${file.year || "Unknown Year"}</td>
-    <td class="px-4 py-2 truncate">${formatTime(file.duration)}</td>
-  `;
+  selectFolderButton.addEventListener("click", async () => {
+    DisplaySong("", true);
+  });
 
-          songItem.addEventListener("click", () => {
-            currentIndex = index;
-            playCurrentFile();
-          });
-
-          songList.appendChild(songItem);
-        });
-      }
-    });
-
-    playPauseButton.addEventListener("click", () => {
-      if (playIcon && pauseIcon) {
-        if (sound) {
-          if (sound.playing()) {
-            sound.pause();
-            playIcon.classList.remove("hidden");
-            pauseIcon.classList.add("hidden");
-          } else {
-            sound.play();
-            playIcon.classList.add("hidden");
-            pauseIcon.classList.remove("hidden");
-          }
-        }
-      }
-    });
-
-    prevButton.addEventListener("click", () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        playCurrentFile();
-      }
-    });
-
-    nextButton.addEventListener("click", () => {
-      if (currentIndex < files.length - 1) {
-        currentIndex++;
-        playCurrentFile();
-      }
-    });
-
-    seekBar.addEventListener("input", () => {
-      if (sound) {
-        sound.seek((parseFloat(seekBar.value) / 100) * sound.duration());
-      }
-    });
-
-    volumeBar.addEventListener("input", () => {
-      if (sound) {
-        sound.volume(parseFloat(volumeBar.value) / 100);
-      }
-    });
-
-    function playCurrentFile() {
-      const file = files[currentIndex];
-      const howlertag = document.getElementById(
-        "howler-tag"
-      ) as HTMLScriptElement;
-      const nowPlayingTitle = document.getElementById("nowPlayingTitle");
-      const nowPlayingArtist = document.getElementById("nowPlayingArtist");
-      const nowPlayingCover = document.getElementById(
-        "nowPlayingCover"
-      ) as HTMLImageElement | null;
-
-      if (howlertag) {
-        //if there is already Howl variable, destroy it
-        Howler.unload();
-        if (sound) {
-          sound.stop();
-        }
-        sound = new Howl({
-          src: [file.path],
-          format: ["flac"],
-          html5: true,
-          volume: parseFloat(volumeBar.value) / 100,
-          onend: () => {
-            if (currentIndex < files.length - 1) {
-              currentIndex++;
-              playCurrentFile();
-            }
-          },
-        });
-        sound.play();
-        if (playIcon && pauseIcon) {
-          playIcon.classList.add("hidden");
-          pauseIcon.classList.remove("hidden");
-        }
-        if (nowPlayingTitle) {
-          nowPlayingTitle.textContent = file.title || file.name;
-        }
-        if (nowPlayingArtist) {
-          nowPlayingArtist.textContent = file.artist || "Unknown Artist";
-        }
-        if (nowPlayingCover && file.picture) {
-          console.log("file.picture", file.picture[0]);
-          //convert Uint8Array to base64
-          nowPlayingCover.src = `data:${
-            file.picture[0].format
-          };base64,${_arrayBufferToBase64(file.picture[0].data)}`;
-        }
-
-        if (durationDisplay && currentTimeDisplay) {
-          sound.on("play", () => {
-            if (sound) {
-              durationDisplay.textContent = formatTime(sound.duration());
-            }
-            setInterval(() => {
-              if (sound) {
-                seekBar.value = (
-                  (sound.seek() / sound.duration()) *
-                  100
-                ).toString();
-                currentTimeDisplay.textContent = formatTime(sound.seek());
-              }
-            }, 1000);
-          });
-        }
-
-        if (seekBar) {
-          seekBar.addEventListener("input", () => {
-            sound?.seek((parseFloat(seekBar.value) / 100) * sound.duration());
-          });
-        }
-      }
-    }
-  } else {
-    //in show dialog, log all required elements to know which one is missing
-    console.log(
-      selectFolderButton,
-      songList,
-      playPauseButton,
-      prevButton,
-      nextButton,
-      seekBar,
-      currentTimeDisplay,
-      durationDisplay,
-      volumeBar,
-      folderNameDisplay
-    );
-    showDialog("Some elements are missing please check the console");
-  }
-
-  if (runCommandButton) {
-    runCommandButton.addEventListener("click", () => {
-      window.electronAPI.runCmd(
-        "spotdl https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC"
-      );
-    });
-  }
   const output = document.getElementById("cmdOutputText");
   window.electronAPI.onCmdOutput((data: any) => {
     if (output) {
@@ -240,11 +63,124 @@ document.addEventListener("DOMContentLoaded", () => {
       generateFolderList(folderName, folderPath);
     }
   );
+
+  playPauseButton.addEventListener("click", () => {
+    if (playIcon && pauseIcon) {
+      if (sound) {
+        if (sound.playing()) {
+          sound.pause();
+          playIcon.classList.remove("hidden");
+          pauseIcon.classList.add("hidden");
+        } else {
+          sound.play();
+          playIcon.classList.add("hidden");
+          pauseIcon.classList.remove("hidden");
+        }
+      }
+    }
+  });
+
+  prevButton.addEventListener("click", () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      playCurrentFile();
+    }
+  });
+
+  nextButton.addEventListener("click", () => {
+    if (currentIndex < files.length - 1) {
+      currentIndex++;
+      playCurrentFile();
+    }
+  });
+
+  seekBar.addEventListener("input", () => {
+    if (sound) {
+      sound.seek((parseFloat(seekBar.value) / 100) * sound.duration());
+    }
+  });
+
+  volumeBar.addEventListener("input", () => {
+    if (sound) {
+      sound.volume(parseFloat(volumeBar.value) / 100);
+    }
+  });
 });
 
-let foldersaved: string[] = [];
-function generateFolderList(folderName: string, folderPath: string) {
-  if (foldersaved.includes(folderPath)) {
+function playCurrentFile() {
+  const file = files[currentIndex];
+  const howlertag = document.getElementById("howler-tag") as HTMLScriptElement;
+  const nowPlayingTitle = document.getElementById("nowPlayingTitle");
+  const nowPlayingArtist = document.getElementById("nowPlayingArtist");
+  const nowPlayingCover = document.getElementById(
+    "nowPlayingCover"
+  ) as HTMLImageElement | null;
+
+  if (howlertag) {
+    //if there is already Howl variable, destroy it
+    Howler.unload();
+    if (sound) {
+      sound.stop();
+    }
+    sound = new Howl({
+      src: [file.path],
+      format: ["flac"],
+      html5: true,
+      volume: parseFloat(volumeBar.value) / 100,
+      onend: () => {
+        if (currentIndex < files.length - 1) {
+          currentIndex++;
+          playCurrentFile();
+        }
+      },
+    });
+    sound.play();
+    if (playIcon && pauseIcon) {
+      playIcon.classList.add("hidden");
+      pauseIcon.classList.remove("hidden");
+    }
+    if (nowPlayingTitle) {
+      nowPlayingTitle.textContent = file.title || file.name;
+    }
+    if (nowPlayingArtist) {
+      nowPlayingArtist.textContent = file.artist || "Unknown Artist";
+    }
+    if (nowPlayingCover && file.picture) {
+      console.log("file.picture", file.picture[0]);
+      //convert Uint8Array to base64
+      nowPlayingCover.src = `data:${
+        file.picture[0].format
+      };base64,${_arrayBufferToBase64(file.picture[0].data)}`;
+    }
+
+    if (durationDisplay && currentTimeDisplay) {
+      sound.on("play", () => {
+        if (sound) {
+          durationDisplay.textContent = formatTime(sound.duration());
+        }
+        setInterval(() => {
+          if (sound) {
+            seekBar.value = (
+              (sound.seek() / sound.duration()) *
+              100
+            ).toString();
+            currentTimeDisplay.textContent = formatTime(sound.seek());
+          }
+        }, 1000);
+      });
+    }
+
+    if (seekBar) {
+      seekBar.addEventListener("input", () => {
+        sound?.seek((parseFloat(seekBar.value) / 100) * sound.duration());
+      });
+    }
+  }
+}
+
+let foldersaved: any[] = [];
+function generateFolderList(folderName: string, fileData: any) {
+  if (foldersaved.includes(fileData)) {
     return;
   }
   const folderListContainer = document.getElementById("folderListContainer");
@@ -272,12 +208,61 @@ function generateFolderList(folderName: string, folderPath: string) {
     <p>${folderName}</p>
   `;
 
-    foldersaved.push(folderPath);
+    foldersaved.push(fileData);
     folderElement.addEventListener("click", () => {
-      window.ipcRenderer.invoke("open-folder", folderPath);
+      DisplaySong(fileData, false);
     });
 
     folderListContainer.appendChild(folderElement);
+  }
+}
+
+async function DisplaySong(folderPath: string, isFolder: boolean) {
+  let result;
+  if (isFolder) {
+    result = await window.ipcRenderer.invoke("select-folder");
+    console.log("result", result);
+  } else {
+    result = folderPath;
+    console.log("result", result);
+  }
+  if (result) {
+    files = result;
+    songList.innerHTML = "";
+    result.forEach((file: any, index: number) => {
+      const songItem = document.createElement("tr");
+      songItem.classList.add(
+        "text-gray-400",
+        "cursor-pointer",
+        "hover:text-gray-200"
+      );
+      songItem.innerHTML = `
+    <td class="px-4 py-2">${index + 1}</td>
+    <td class="px-4 py-2">
+        <div class="flex items-center">
+            <img src="data:${
+              file.picture[0].format
+            };base64,${_arrayBufferToBase64(
+        file.picture[0].data
+      )}" class="w-10 h-10" />
+            <div class="ml-4">
+                <div class="font-semibold">${file.title || file.name}</div>
+                <div class="text-sm">${file.artist || "Unknown Artist"}</div>
+            </div>
+        </div>
+    </td>
+    <td class="px-4 py-2 truncate">${file.album || "Unknown Album"}</td>
+    <td class="px-4 py-2 truncate">${file.year || "Unknown Year"}</td>
+    <td class="px-4 py-2 truncate">${formatTime(file.duration)}</td>
+  `;
+
+      songItem.addEventListener("click", () => {
+        currentIndex = index;
+        playCurrentFile();
+      });
+
+      songList.appendChild(songItem);
+    });
   }
 }
 

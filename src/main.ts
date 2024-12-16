@@ -56,8 +56,6 @@ async function openFolder(folderPath: string) {
   });
   //get the folder name
   const folderName = path.basename(folderPath);
-  mainWindow?.webContents.send("show-folder-name", folderName, folderPath);
-
   const fileData = await Promise.all(
     files.map(async (file) => {
       const filePath = path.join(folderPath, file);
@@ -88,7 +86,7 @@ async function openFolder(folderPath: string) {
     //return metadata;
     return metadata;
   }
-
+  mainWindow?.webContents.send("show-folder-name", folderName, fileData);
   return fileData;
 }
 
