@@ -290,7 +290,7 @@ async function DisplaySong(folderPath: string, isFolder: boolean) {
         file.picture[0].data
       )}" class="w-10 h-10" />
             <div class="ml-4">
-                <div class="font-semibold">${file.title || file.name}</div>
+                <div class="font-bold">${file.title || file.name}</div>
                 <div class="text-sm">${file.artist || "Unknown Artist"}</div>
             </div>
         </div>

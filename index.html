@@ -37,16 +37,18 @@
           >
             Select Folder
           </button>
-          <ul id="folderListContainer"></ul>
+          <div id="playlistContainer" class="overflow-auto">
+            <ul id="folderListContainer"></ul>
+          </div>
         </aside>
 
         <!-- Main Area -->
         <main class="flex-grow p-4">
-          <div class="bg-gray-800 p-4 rounded-lg" id="listsong">
-            <h2 class="text-xl font-semibold mb-4">Songs</h2>
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
+          <table class="min-w-full divide-gray-200"></table>
+          <div class="bg-gray-800 p-4 rounded-lg overflow-auto" id="listsong">
+            <table class="min-w-full divide-y divide-gray-200 table-fixed">
+              <thead class="sticky top-0 bg-gray-800 text-white">
+                <tr id="tableHeader">
                   <th class="px-4 py-2">#</th>
                   <th class="px-4 py-2">Title</th>
                   <th class="px-4 py-2">Album</th>
@@ -54,7 +56,7 @@
                   <th class="px-4 py-2">Duration</th>
                 </tr>
               </thead>
-              <tbody id="songList">
+              <tbody id="songList" class="overflow-auto">
                 <!-- Rows will be appended here -->
               </tbody>
             </table>
