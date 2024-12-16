@@ -235,20 +235,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.electronAPI.on(
     "show-folder-name",
-    (event: any, folderName: string) => {
-      generateFolderList(folderName);
+    (folderName: string, folderPath: string) => {
+      console.log("folderName", folderName, "folderPath", folderPath);
+      generateFolderList(folderName, folderPath);
     }
   );
 });
 
-function generateFolderList(folderName: string) {
+let foldersaved: string[] = [];
+function generateFolderList(folderName: string, folderPath: string) {
+  if (foldersaved.includes(folderPath)) {
+    return;
+  }
   const folderListContainer = document.getElementById("folderListContainer");
-  if (!folderListContainer) return;
-
-  const folderElement = document.createElement("div");
-  folderElement.id = "folderNameDisplay";
-  folderElement.className = "text-gray-400 flex items-center space-x-2 mb-4";
-  folderElement.innerHTML = `
+  if (folderListContainer) {
+    const folderElement = document.createElement("div");
+    folderElement.id = "folderNameDisplay";
+    folderElement.className = "text-gray-400 flex items-center space-x-2 mb-4";
+    folderElement.innerHTML = `
     <svg
       fill="#000000"
       width="32px"
@@ -268,7 +272,13 @@ function generateFolderList(folderName: string) {
     <p>${folderName}</p>
   `;
 
-  folderListContainer.appendChild(folderElement);
+    foldersaved.push(folderPath);
+    folderElement.addEventListener("click", () => {
+      window.ipcRenderer.invoke("open-folder", folderPath);
+    });
+
+    folderListContainer.appendChild(folderElement);
+  }
 }
 
 function formatTime(seconds: number): string {

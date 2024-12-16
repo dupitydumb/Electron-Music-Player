@@ -170,3 +170,7 @@ td .song-info p {
     transform: rotate(360deg);
   }
 }
+
+div#folderNameDisplay {
+  cursor: pointer;
+}

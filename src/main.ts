@@ -26,15 +26,37 @@ ipcMain.handle("select-folder", async () => {
   if (result.canceled || result.filePaths.length === 0) {
     return null;
   }
-
   const folderPath = result.filePaths[0];
+  return openFolder(folderPath);
+});
+
+ipcMain.handle("open-folder", async (event, folderPath: string) => {
+  return openFolder(folderPath);
+});
+
+// ipcMain.on("run-cmd", (event, command: string) => {
+//   const child = spawn(command, { shell: true });
+
+//   child.stdout.on("data", (data) => {
+//     event.sender.send("cmd-output", data.toString());
+//   });
+
+//   child.stderr.on("data", (data) => {
+//     event.sender.send("cmd-output", data.toString());
+//   });
+
+//   child.on("close", (code) => {
+//     event.sender.send("cmd-output", `Process exited with code ${code}`);
+//   });
+// });
+
+async function openFolder(folderPath: string) {
   const files = fs.readdirSync(folderPath).filter((file) => {
     return file.endsWith(".mp3") || file.endsWith(".flac");
   });
   //get the folder name
   const folderName = path.basename(folderPath);
-  console.log("folderName", folderName);
-  mainWindow?.webContents.send("show-folder-name", "Folder Name", folderName);
+  mainWindow?.webContents.send("show-folder-name", folderName, folderPath);
 
   const fileData = await Promise.all(
     files.map(async (file) => {
@@ -68,23 +90,7 @@ ipcMain.handle("select-folder", async () => {
   }
 
   return fileData;
-});
-
-// ipcMain.on("run-cmd", (event, command: string) => {
-//   const child = spawn(command, { shell: true });
-
-//   child.stdout.on("data", (data) => {
-//     event.sender.send("cmd-output", data.toString());
-//   });
-
-//   child.stderr.on("data", (data) => {
-//     event.sender.send("cmd-output", data.toString());
-//   });
-
-//   child.on("close", (code) => {
-//     event.sender.send("cmd-output", `Process exited with code ${code}`);
-//   });
-// });
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
