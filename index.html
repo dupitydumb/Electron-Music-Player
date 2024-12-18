@@ -31,19 +31,17 @@
         <!-- Sidebar -->
         <aside class="bg-gray-800 p-4 w-64 rounded-lg" id="Sidebar">
           <h2 class="text-xl font-semibold mb-4">Playlist</h2>
-          <button
-            id="selectFolderButton"
-            class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg mb-4"
-          >
-            Select Folder
-          </button>
           <div id="playlistContainer" class="overflow-auto">
             <ul id="folderListContainer"></ul>
           </div>
+          <!-- Add Playlist Button -->
+          <div class="mt-4 flex flex-grow items-center mb-4">
+            <svg id="selectFolderButton" fill="#ffffff" width="16px" height="16px" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M34.24 1.6H5.68q-1.68 0 -2.88 1.2t-1.2 2.88v28.56q0 1.68 1.2 2.88t2.88 1.2h28.56q1.68 0 2.88 -1.2t1.2 -2.88V5.68q0 -1.68 -1.2 -2.88t-2.88 -1.2M30.16 22H22v8.16H17.92V22H9.76V17.92h8.16V9.76h4.08v8.16h8.16z"/></svg>
+            <p class="text-white ml-2">Add Playlist</p>
         </aside>
 
         <!-- Main Area -->
-        <main class="flex-grow p-4">
+        <main class="flex-grow p-4" id="Main-Area">
           <table class="min-w-full divide-gray-200"></table>
           <div class="bg-gray-800 p-4 rounded-lg overflow-auto" id="listsong">
             <table class="min-w-full divide-y divide-gray-200 table-fixed">
@@ -62,106 +60,125 @@
             </table>
           </div>
         </main>
+
+        <!-- Right Sidebar -->
+         <aside class="p-4 w-64 rounded-lg bg-gray-800 m-4" id="Righ-Sidebar">
+          <h2 class="text-xl font-semibold mb-4">Lyrics</h2>
+          <div id="lyricsContainer" class="overflow-auto">
+            <div id="lyricsContent" class="overflow-auto">
+              <!-- Lyrics will be appended here -->
+               
+            </div>
+        </aside>
       </div>
 
       <!-- Now Playing and Audio Player -->
       <div
-        class="bg-gray-800 p-4 fixed bottom-0 left-0 right-0 flex items-center justify-between"
+        class="bg-gray-800 fixed bottom-0 left-0 right-0 items-center justify-between"
+        id="bottom-div"
       >
-        <!-- Now Playing -->
-        <div class="flex items-center space-x-4" id="bottomleft">
-          <img id="nowPlayingCover" class="w-24 h-24" alt="Album Cover"
-          src="https://via.placeholder.com/64""/>
-          <div id="nowPlayingInfo" class="w-48">
-            <h3 id="nowPlayingTitle" class="text-lg font-bold truncate">
-              Title
-            </h3>
-            <p id="nowPlayingArtist" class="text-gray-400 truncate">Artist</p>
+        <div class="flex items-center justify-between">
+          <!-- Now Playing -->
+          <div class="flex items-center space-x-4" id="bottomleft">
+            <img id="nowPlayingCover" class="" alt="Album Cover"
+            src="https://via.placeholder.com/64""/>
+            <div id="nowPlayingInfo" class="w-48">
+              <h3 id="nowPlayingTitle" class="text-lg font-bold truncate">
+                Title
+              </h3>
+              <p id="nowPlayingArtist" class="text-gray-400 truncate">Artist</p>
+            </div>
           </div>
-        </div>
+          <div class="flex items-center justify-between">
+          <!-- Audio Player -->
+          <div class="items-center justify-between">
+            <div class="flex control-buttons" id="controlButtons">
+              <!-- shuffle icon -->
+              <button id="shuffleButton" class="text-white buttonhover">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="-5 0 35 35"
+                  fill="none"
+                  stroke="#ffffff"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="h-16 w-16"
+                >
+                  <polyline points="16 3 21 3 21 8" />
+                  <line x1="4" y1="20" x2="21" y2="3" />
+                  <polyline points="21 16 21 21 16 21" />
+                  <line x1="15" y1="15" x2="21" y2="21" />
+                  <line x1="4" y1="4" x2="9" y2="9" />
+                </svg>
+              </button>
+            <button id="prevButton" class="text-white buttonhover">
+              <!-- Previous icon -->
+              <svg class="h-16 w-16" width="32px" height="32px" viewBox="0 0 0.96 0.96" fill="none" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" transform="matrix(-1,0,0,1,0,0)"><path d="M0.072 0.084A0.02 0.02 0 0 0 0.04 0.1v0.4a0.02 0.02 0 0 0 0.032 0.016l0.28 -0.2a0.02 0.02 0 0 0 0 -0.033z" fill="#ffffff"></path><path d="M0.52 0.52h0.04V0.08h-0.04z" fill="#ffffff"></path></svg>
+            </button>
+            <button id="playPauseButton" class="text-white buttonhover">
+              <svg
+                id="playIcon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="-5 2 32 32"
+                fill="currentColor"
+                class=""
 
-        <!-- Audio Player -->
-        <div class="flex justify-between text-gray-400 text-sm w-full id=">
-          <span id="currentTime">0:00</span>
-          <input id="seekBar" type="range" value="0" class="w-full mx-4" />
-          <span id="duration">0:00</span>
-        </div>
-        <div class="flex items-center justify-between ml-4" id="volumebar">
-          <!-- Volume icon -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="w-6 h-6"
-          >
-            <path
-              d="M3 9v6h4l5 5V4L7 9H3zm13.5 2c0-1.76-1.34-3.2-3-3.45v6.9c1.66-.25 3-1.69 3-3.45zM13 3.5v2c2.76.5 5 2.76 5 5.5s-2.24 5-5 5v2c4.02 0 7-3.98 7-8s-2.98-8-7-8z"
-            ></path>
-          </svg>
-          <input
-            id="volumeinput"
-            type="range"
-            min="0"
-            max="100"
-            value="70"
-            class="w-full mx-4 w-full"
-          />
-        </div>
-        <div class="custom-audio-player flex items-center justify-between ml-4">
-          <button id="prevButton" class="text-white">
-            <!-- Previous icon -->
-            <svg
-              viewBox="0 0 32 32"
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-            >
-              <path
-                d="M8 8h2.667v16h-2.667zm4.667 8 11.333 8V8z"
-                fill="#ffffff"
-                class="fill-000000"
+              >
+                <path d="M5 3v18l15-9L5 3z"></path>
+              </svg>
+              <svg
+                id="pauseIcon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="-5 2 32 32"
+                fill="currentColor"
+                class="hidden"
+              >
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
+              </svg>
+            </button>
+            <button id="nextButton" class="text-white buttonhover">
+              <!-- Next icon -->
+              <svg class="" viewBox="0 0 0.96 0.96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.072 0.084A0.02 0.02 0 0 0 0.04 0.1v0.4a0.02 0.02 0 0 0 0.032 0.016l0.28 -0.2a0.02 0.02 0 0 0 0 -0.033z" fill="#ffffff"/><path d="M0.52 0.52h0.04V0.08h-0.04z" fill="#ffffff"/></svg>
+            </button>
+            <button id="repeatButton" class="text-white buttonhover">
+              <!-- Repeat icon -->
+              <svg fill="#ffffff" viewBox="0 0 1.3 1.3" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24"><path d="M0.22 0.7H0.16v-0.44h0.312l-0.032 0.032c-0.008 0.008 -0.012 0.016 -0.012 0.028 0 0.024 0.016 0.04 0.04 0.04 0.012 0 0.02 -0.004 0.028 -0.012l0.1 -0.1c0.016 -0.016 0.016 -0.04 0 -0.056l-0.1 -0.1c-0.016 -0.016 -0.04 -0.016 -0.056 0s-0.016 0.04 0 0.056l0.032 0.032H0.12c-0.024 0 -0.04 0.016 -0.04 0.04v0.52c0 0.024 0.016 0.04 0.04 0.04h0.1c0.024 0 0.04 -0.016 0.04 -0.04s-0.016 -0.04 -0.04 -0.04M0.84 0.18h-0.1c-0.024 0 -0.04 0.016 -0.04 0.04s0.016 0.04 0.04 0.04H0.8v0.44h-0.336l0.032 -0.032c0.016 -0.016 0.016 -0.04 0 -0.056s-0.04 -0.016 -0.056 0l-0.1 0.1c-0.016 0.016 -0.016 0.04 0 0.056l0.1 0.1c0.008 0.008 0.016 0.012 0.028 0.012s0.02 -0.004 0.028 -0.012c0.016 -0.016 0.016 -0.04 0 -0.056l-0.032 -0.032H0.84c0.024 0 0.04 -0.016 0.04 -0.04v-0.52c0 -0.024 -0.016 -0.04 -0.04 -0.04"/></svg>
+            </button>
+            </div>
+            <div class="flex justify-between text-gray-400 text-sm w-full" id="bot-seekbar"">
+              <span id="currentTime">0:00</span>
+              <input id="seekBar" type="range" value="0" class="w-full mx-4" />
+              <span id="duration">0:00</span>
+            </div>
+            
+          </div>
+          </div>
+          <div class="flex items-center justify-between" id="right-control-panel">
+            <p class="mr-4">Lossless</p>
+            <div class="flex items-center justify-between" id="volumebar">
+              <!-- Volume icon -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-6 h-6"
+              >
+                <path
+                  d="M3 9v6h4l5 5V4L7 9H3zm13.5 2c0-1.76-1.34-3.2-3-3.45v6.9c1.66-.25 3-1.69 3-3.45zM13 3.5v2c2.76.5 5 2.76 5 5.5s-2.24 5-5 5v2c4.02 0 7-3.98 7-8s-2.98-8-7-8z"
+                ></path>
+              </svg>
+              <input
+                id="volumeinput"
+                type="range"
+                min="0"
+                max="100"
+                value="70"
+                class="w-full mx-4 w-full"
               />
-              <path d="M0 0h32v32H0z" fill="none" />
-            </svg>
-          </button>
-          <button id="playPauseButton" class="text-white">
-            <svg
-              id="playIcon"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="w-6 h-6"
-            >
-              <path d="M5 3v18l15-9L5 3z"></path>
-            </svg>
-            <svg
-              id="pauseIcon"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="w-6 h-6 hidden"
-            >
-              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
-            </svg>
-          </button>
-          <button id="nextButton" class="text-white">
-            <!-- Next icon -->
-            <svg
-              viewBox="0 0 32 32"
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-            >
-              <path
-                d="m8 24 11.333 -8 -11.333 -8zm13.333 -16v16h2.667V8z"
-                fill="#ffffff"
-                class="fill-000000"
-              />
-              <path d="M0 0h32v32H0z" fill="none" />
-            </svg>
-          </button>
+            </div>
+            </div>
         </div>
-        <audio id="audioPlayer" class="hidden"></audio>
       </div>
 
       <!-- Footer -->
@@ -179,7 +196,9 @@
     ></script>
     <div id="dialogBox" class="dialog hidden">
       <div class="dialog-content">
-        <div id="spinner-dialog" class="spinner"></div>
+        <div class="dialog-header">
+          <div id="spinner-dialog" class="spinner"></div>
+        </div>
         <p id="dialogText">Loading...</p>
         <button
           id="dialogButton"

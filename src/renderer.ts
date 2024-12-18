@@ -11,8 +11,13 @@ let folderNameDisplay: any;
 let playIcon: any;
 let pauseIcon: any;
 let currentIndex: number;
+let shuffleButton: any;
+let repeatButton: any;
 let files: any[] = [];
 let sound: Howl | null = null;
+let isRepeat = false;
+let isShuffle = false;
+let lyricsData: any;
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOMContentLoaded");
@@ -28,6 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
   pauseIcon = document.getElementById("pauseIcon");
   volumeBar = document.getElementById("volumeinput") as HTMLInputElement;
   folderNameDisplay = document.getElementById("folderListContainer");
+  shuffleButton = document.getElementById("shuffleButton");
+  repeatButton = document.getElementById("repeatButton");
   currentIndex = 0;
   const okButton = document.getElementById("dialogButton");
 
@@ -54,9 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(data);
   });
 
-  window.electronAPI.on("show-dialog", (event: any, message: string) => {
-    showDialog(message);
-  });
+  window.electronAPI.on(
+    "show-dialog",
+    (message: string, isButton: boolean, isSpinner: boolean) => {
+      showDialog(message, isButton, isSpinner);
+    }
+  );
 
   window.electronAPI.on("hide-dialog", () => {
     hideDialog();
@@ -69,6 +79,26 @@ document.addEventListener("DOMContentLoaded", () => {
       generateFolderList(folderName, folderPath);
     }
   );
+
+  repeatButton.addEventListener("click", () => {
+    if (isRepeat) {
+      isRepeat = false;
+      repeatButton.classList.remove("repeaton");
+    } else {
+      isRepeat = true;
+      repeatButton.classList.add("repeaton");
+    }
+  });
+
+  shuffleButton.addEventListener("click", () => {
+    if (isShuffle) {
+      isShuffle = false;
+      shuffleButton.classList.remove("shuffleon");
+    } else {
+      isShuffle = true;
+      shuffleButton.classList.add("shuffleon");
+    }
+  });
 
   playPauseButton.addEventListener("click", () => {
     if (playIcon && pauseIcon) {
@@ -95,7 +125,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   nextButton.addEventListener("click", () => {
     if (currentIndex < files.length - 1) {
-      currentIndex++;
+      if (isShuffle) {
+        currentIndex = Math.floor(Math.random() * files.length);
+      } else {
+        currentIndex++;
+      }
       playCurrentFile();
     }
   });
@@ -134,9 +168,19 @@ function playCurrentFile() {
       volume: parseFloat(volumeBar.value) / 100,
       onend: () => {
         if (currentIndex < files.length - 1) {
-          currentIndex++;
+          if (isShuffle) {
+            currentIndex = Math.floor(Math.random() * files.length);
+          }
+          if (isRepeat) {
+            currentIndex = currentIndex;
+          } else {
+            currentIndex++;
+          }
           playCurrentFile();
         }
+      },
+      onplay: () => {
+        isPlaying();
       },
       onloaderror: (id, error) => {
         console.log("error", error);
@@ -164,7 +208,9 @@ function playCurrentFile() {
             break;
           case 4:
             showDialog(
-              `Error: The media resource ${file.title} was not suitable`,
+              `Error: The media resource ${limitText(
+                file.title
+              )} was not suitable`,
               true,
               false
             );
@@ -175,7 +221,13 @@ function playCurrentFile() {
         }
       },
       onload: () => {
-        console.log("onload");
+        window.ipcRenderer
+          .invoke("get-lyrics", `${file.title}|${file.artist}|${file.album}`)
+          .then((lyrics: any) => {
+            setLyricsJson(lyrics).then(() => {
+              DisplayPlainLyrics(lyricsData);
+            });
+          });
       },
     });
     sound.play();
@@ -184,7 +236,8 @@ function playCurrentFile() {
       pauseIcon.classList.remove("hidden");
     }
     if (nowPlayingTitle) {
-      nowPlayingTitle.textContent = file.title || file.name;
+      nowPlayingTitle.textContent =
+        limitText(file.title, 40) || limitText(file.name, 40);
     }
     if (nowPlayingArtist) {
       nowPlayingArtist.textContent = file.artist || "Unknown Artist";
@@ -227,6 +280,11 @@ function generateFolderList(folderName: string, fileData: any) {
   if (foldersaved.includes(fileData)) {
     return;
   }
+  //trim the folder name if it is too long
+  if (folderName.length > 15) {
+    folderName = folderName.substring(0, 20) + "...";
+  }
+
   const folderListContainer = document.getElementById("folderListContainer");
   if (folderListContainer) {
     const folderElement = document.createElement("div");
@@ -290,12 +348,18 @@ async function DisplaySong(folderPath: string, isFolder: boolean) {
         file.picture[0].data
       )}" class="w-10 h-10" />
             <div class="ml-4">
-                <div class="font-bold">${file.title || file.name}</div>
-                <div class="text-sm">${file.artist || "Unknown Artist"}</div>
+                <div class="font-bold">${
+                  limitText(file.title) || limitText(file.name)
+                }</div>
+                <div class="text-sm">${
+                  limitText(file.artist) || "Unknown Artist"
+                }</div>
             </div>
         </div>
     </td>
-    <td class="px-4 py-2 truncate">${file.album || "Unknown Album"}</td>
+    <td class="px-4 py-2 truncate">${
+      limitText(file.album) || "Unknown Album"
+    }</td>
     <td class="px-4 py-2 truncate">${file.year || "Unknown Year"}</td>
     <td class="px-4 py-2 truncate">${formatTime(file.duration)}</td>
   `;
@@ -365,5 +429,72 @@ function hideDialog() {
   const dialogBox = document.getElementById("dialogBox");
   if (dialogBox) {
     dialogBox.classList.add("hidden");
+  }
+}
+
+function limitText(text: string, limit: number = 20): string {
+  return text.length > limit ? text.substring(0, limit) + "..." : text;
+}
+
+async function setLyricsJson(lyrics: any) {
+  const lyricsDisplay = document.getElementById("lyricsContent");
+  lyricsData = parseSyncLyrics(lyrics);
+}
+
+function DisplayPlainLyrics(lyrics: any) {
+  const lyricsDisplay = document.getElementById("lyricsContent");
+  //remove all the child nodes
+  while (lyricsDisplay?.firstChild) {
+    lyricsDisplay.removeChild(lyricsDisplay.firstChild);
+  }
+  if (lyricsDisplay) {
+    for (let i = 0; i < lyrics.length; i++) {
+      const line = document.createElement("p");
+      line.textContent = lyrics[i].text;
+      lyricsDisplay.appendChild(line);
+    }
+  }
+}
+
+function updateDisplayedLyrics(currentTime: number) {
+  const lyricsDisplay = document.getElementById("lyricsContent");
+  if (!lyricsDisplay) return;
+
+  // Clear existing lyrics
+  while (lyricsDisplay.firstChild) {
+    lyricsDisplay.removeChild(lyricsDisplay.firstChild);
+  }
+
+  // Filter and display the relevant lyrics
+  const visibleLyrics = lyricsData
+    .filter((lyric: any) => lyric.time <= currentTime)
+    .slice(-3);
+  for (const lyric of visibleLyrics) {
+    const line = document.createElement("p");
+    line.textContent = lyric.text;
+    lyricsDisplay.appendChild(line);
+  }
+}
+
+function parseSyncLyrics(syncedLyrics: any) {
+  const lines = syncedLyrics.split("\n");
+  return lines
+    .map((line: any) => {
+      const match = line.match(/\[(\d{2}:\d{2}\.\d{2})\] (.*)/);
+      if (match) {
+        const timeParts = match[1].split(":");
+        const timeInSeconds =
+          parseInt(timeParts[0]) * 60 + parseFloat(timeParts[1]);
+        const text = match[2].trim() === "" ? "..." : match[2];
+        return { time: timeInSeconds, text: text };
+      }
+      return null;
+    })
+    .filter((line: any) => line !== null);
+}
+
+function isPlaying() {
+  if (sound?.playing()) {
+    setTimeout(isPlaying, 1000); //adjust timeout to fit your needs
   }
 }

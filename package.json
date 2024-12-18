@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "autoprefixer": "^10.4.20",
+    "axios": "^1.7.9",
     "flac.js": "^0.2.1",
     "howler": "^2.2.4",
     "jsmediatags": "^3.9.7",

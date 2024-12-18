@@ -1,11 +1,12 @@
-import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, BrowserWindow, ipcMain, dialog, ipcRenderer } from "electron";
 import * as fs from "fs";
 import * as path from "path";
-import NodeID3 from "node-id3";
 import { Howl, Howler } from "howler";
 import { spawn } from "child_process";
-import { electron } from "process";
+import { electron, title } from "process";
 import * as mm from "music-metadata";
+import axios from "axios";
+import { get } from "http";
 
 let mainWindow: BrowserWindow | null;
 let downloadWindow: BrowserWindow | null;
@@ -30,6 +31,28 @@ ipcMain.handle("select-folder", async () => {
   return openFolder(folderPath);
 });
 
+ipcMain.handle("get-lyrics", async (event, data) => {
+  const [title, artist, album] = data.split("|");
+  try {
+    const response = await axios.get(`https://lrclib.net/api/search?`, {
+      params: {
+        track_name: title,
+        artist_name: artist,
+        album_name: album,
+      },
+    });
+    console.log("response", response.data[0].syncedLyrics);
+    if (response.data && response.data.length > 0) {
+      return response.data[0].syncedLyrics;
+    } else {
+      return "Lyrics not foundxx";
+    }
+  } catch (error) {
+    console.error("Error fetching lyrics:", error);
+    return "Error fetching lyrics";
+  }
+});
+
 ipcMain.handle("open-folder", async (event, folderPath: string) => {
   return openFolder(folderPath);
 });
@@ -51,15 +74,28 @@ ipcMain.handle("open-folder", async (event, folderPath: string) => {
 // });
 
 async function openFolder(folderPath: string) {
-  const files = fs.readdirSync(folderPath).filter((file) => {
-    return file.endsWith(".mp3") || file.endsWith(".flac");
-  });
+  const files = await scanFolder(folderPath);
+  if (files.length === 0) {
+    mainWindow?.webContents.send(
+      "show-dialog",
+      "No files found in the folder",
+      true,
+      false
+    );
+    return;
+  }
+
   //get the folder name
   const folderName = path.basename(folderPath);
   const fileData = await Promise.all(
     files.map(async (file) => {
       const filePath = path.join(folderPath, file);
-      mainWindow?.webContents.send("show-dialog", "Reading file data", file);
+      mainWindow?.webContents.send(
+        "show-dialog",
+        `Reading file ${file}`,
+        false,
+        true
+      );
       let tags;
       let pictureData = null;
       let flacData = null;
@@ -86,6 +122,7 @@ async function openFolder(folderPath: string) {
     //return metadata;
     return metadata;
   }
+
   mainWindow?.webContents.send("show-folder-name", folderName, fileData);
   return fileData;
 }
@@ -134,3 +171,52 @@ ipcMain.on("create-audio-player", (event, file: string) => {
   console.log("Audio player playing", audioPlayer);
   event.reply("audio-player-created", audioPlayer);
 });
+
+async function scanFolder(folderPath: string): Promise<string[]> {
+  let audioFiles: string[] = [];
+  const files = await fs.promises.readdir(folderPath);
+
+  // if files format is mp3 or flac return the file
+  audioFiles = files
+    .filter((file) => file.endsWith(".mp3") || file.endsWith(".flac"))
+    .map((file) => file);
+
+  // search audio files in subfolders of any until no more subfolders
+  let subfolders = files.filter((file) =>
+    fs.lstatSync(path.join(folderPath, file)).isDirectory()
+  );
+  while (subfolders.length > 0) {
+    for (let folder of subfolders) {
+      const subfolderPath = path.join(folderPath, folder);
+      const subfolderFiles = await scanFolder(subfolderPath);
+      audioFiles = audioFiles.concat(
+        subfolderFiles.map((file) => path.join(folder, file))
+      );
+    }
+    subfolders = [];
+    subfolders = audioFiles
+      .filter((file) => fs.lstatSync(path.join(folderPath, file)).isDirectory())
+      .map((file) => file);
+  }
+
+  return audioFiles;
+}
+
+async function GetLyrics(artist: string, title: string) {
+  try {
+    console.log("Getting lyrics for", artist, title);
+    const response = await axios.get(
+      "https://lrclib.net/api/search?q=" + artist + " " + title
+    );
+    console.log("https://lrclib.net/api/search?q=" + artist + " " + title);
+    if (response.data.length === 0) {
+      return "No lyrics found";
+    }
+    console.log("Lyrics", response);
+    const lyrics = response.data[0].lyric;
+
+    return lyrics;
+  } catch (error) {
+    console.error("Error getting lyrics", error);
+  }
+}

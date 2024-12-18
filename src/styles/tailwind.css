@@ -32,15 +32,28 @@
   white-space: nowrap;
 }
 
+main#Main-Area {
+  width: 50%;
+}
+
 aside#Sidebar {
-  width: 20rem;
-  height: 20rem;
+  width: 15rem;
+  height: 18rem;
   margin: 1rem;
+}
+aside#Righ-Sidebar {
+  width: 25rem;
+  height: 25rem;
+}
+
+div#lyricsContainer {
+  height: 20rem;
 }
 
 div#playlistContainer {
   max-height: 11rem;
   overflow: auto;
+  height: 100%;
 }
 
 div#listsong {
@@ -51,27 +64,55 @@ div#listsong {
 }
 
 div#bottomleft {
-  margin-right: 6rem;
+  margin: 1rem;
+}
+
+div#controlButtons {
+  margin-top: 0.5rem;
+}
+
+.control-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.control-buttons svg {
+  width: 32px; /* Set the desired width */
+  height: 32px; /* Set the desired height */
+  margin: 0 5px; /* Optional: Add some space between the SVGs */
+}
+
+.shuffleon svg {
+  stroke: #519b6d;
+  fill: #519b6d;
+}
+.repeaton svg {
+  color: #519b6d;
+  fill: #519b6d;
+}
+svg#selectFolderButton {
+  cursor: pointer;
 }
 
 div#volumebar {
-  width: 15rem;
+  width: 10rem;
 }
 
-/* Change the appearance of the previous button on hover */
-button#prevButton:hover {
-  transform: scale(1.1); /* Example: slightly enlarge the button */
+div#bot-seekbar {
+  width: 40vw;
 }
 
-/* Change the appearance of the next button on hover */
-button#nextButton:hover {
-  transform: scale(1.1); /* Example: slightly enlarge the button */
+img#nowPlayingCover {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.5rem;
 }
 
-/* Change the appearance of the play button on hover */
-button#playPauseButton:hover {
-  transform: scale(1.1); /* Example: slightly enlarge the button */
+.buttonhover:hover {
+  transform: scale(1.1);
 }
+
 #cmdOutputText {
   white-space: pre-wrap; /* Enables text wrapping */
   word-wrap: break-word; /* Breaks long words */
@@ -157,11 +198,11 @@ td .song-info p {
   padding: 20px;
   border-radius: 5px;
   text-align: center;
-  max-width: 80%;
-  max-height: 80%;
+  max-width: 40%;
+  max-height: 30%;
   overflow: auto;
-  min-width: 20%;
-  min-height: 20%;
+  min-width: 40%;
+  min-height: 10%;
 }
 
 .spinner {
@@ -172,6 +213,7 @@ td .song-info p {
   height: 40px;
   animation: spin 1s linear infinite;
   margin-bottom: 10px;
+  margin-left: 45%;
 }
 
 @keyframes spin {
